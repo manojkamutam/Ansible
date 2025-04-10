@@ -1,0 +1,42 @@
+---
+- name: Install Basic Utilities on Ubuntu
+  hosts: localhost
+  become: yes  # To run tasks with sudo
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install basic packages
+      apt:
+        name:
+          - curl
+          - wget
+          - zip
+          - net-tools
+          - vim
+          - git
+          - unzip
+          - htop
+          - build-essential
+        state: present
+
+    - name: Check installed versions
+      command: "{{ item }} --version"
+      loop:
+        - curl
+        - wget
+        - zip
+        - netstat  # From net-tools
+        - vim
+        - git
+        - unzip
+        - htop
+        - gcc  # From build-essential
+      register: version_info
+      ignore_errors: yes
+
+    - name: Display installed versions
+      debug:
+        var: version_info.results
